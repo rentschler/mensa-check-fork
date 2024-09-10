@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <title>{{text}}  -  {{emoji}}</title>
+    <style>
+        body {
+            background-color: {{ color}};
+            color: #f0f0f0;
+            font-family: Roboto,
+            sans-serif;
+            font-weight: 300;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        h1,
+        div {
+            font-size: 4vh;
+            margin: 0;
+            padding: 0;
+            max-width: 1000px;
+        }
+
+        footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background-color: #333;
+            color: #f0f0f0;
+            padding: 10px;
+            text-align: center;
+        }
+        span {
+            background-color: salmon;
+            padding: 5px;
+            margin: 5px;
+            border-radius: 5px;
+            color: white;
+        }
+        a {
+            text-decoration: none;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>👮</h1>
+    <h1 style="margin-bottom: 30px;">Spätzle Check:</h1>
+    <div>
+        {{ text }}
+    </div>
+    <div>{{emoji}}</div>
+
+    <footer>
+        <p>Powered by:
+            <a href="https://kubernetes.io/de/"><span>k8s</span></a>
+            <a href="https://fastapi.tiangolo.com/"><span>fastapi</span></a>
+            <a href="https://github.com/traberph/mensa-check"><span>github</span></a>
+            <a href="https://seezeit.com/essen/speiseplaene/mensa-giessberg/"><span>seezeit</span></a></p>
+        <p>Imprint: <a href="https://github.com/traberph">Philipp Traber</a></p>
+    </footer>
+</body>
+
+</html>

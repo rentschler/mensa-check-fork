@@ -1,0 +1,46 @@
+name: Build and Push Docker Image
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*.*.*'  # Trigger on version tags
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log in to Docker Registry
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login ${{ secrets.REGISTRY_URL }} -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+
+      - name: Extract repo name
+        id: repo
+        run: echo "REPO_NAME=$(basename ${{ github.repository }})" >> $GITHUB_ENV
+
+      - name: Set image tags
+        id: tags
+        run: |
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            TAG="${GITHUB_REF#refs/tags/}"
+          else
+            TAG="${GITHUB_SHA::7}"  # Short SHA for non-tag builds
+          fi
+          echo "IMAGE_TAG=${TAG}" >> $GITHUB_ENV
+          echo "IMAGE_TAG_LATEST=latest" >> $GITHUB_ENV
+
+      - name: Build Docker image
+        run: docker build -t ${{ secrets.REGISTRY_URL }}/${{ env.REPO_NAME }}:${{ env.IMAGE_TAG }} .
+
+      - name: Push Docker image
+        run: |
+          docker push ${{ secrets.REGISTRY_URL }}/${{ env.REPO_NAME }}:${{ env.IMAGE_TAG }}
+          docker tag ${{ secrets.REGISTRY_URL }}/${{ env.REPO_NAME }}:${{ env.IMAGE_TAG }} ${{ secrets.REGISTRY_URL }}/${{ env.REPO_NAME }}:${{ env.IMAGE_TAG_LATEST }}
+          docker push ${{ secrets.REGISTRY_URL }}/${{ env.REPO_NAME }}:${{ env.IMAGE_TAG_LATEST }}
+
+      - name: Logout of Docker Registry
+        run: docker logout ${{ secrets.REGISTRY_URL }}
