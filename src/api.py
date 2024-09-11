@@ -2,8 +2,10 @@ from fastapi import FastAPI
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-import requests
 from cachetools import cached, TTLCache
+from bs4 import BeautifulSoup
+import requests
+
 
 cache = TTLCache(maxsize=1, ttl=3600)
 app = FastAPI()
@@ -12,13 +14,23 @@ templates = Jinja2Templates(directory="template")
 @cached(cache)
 def checkMensa():
     print("Checking Mensa")
+    
     url = 'https://seezeit.com/essen/speiseplaene/mensa-giessberg/'
     r = requests.get(url)
-    text = r.text
-    pos = text.find('Spätzle')
-    if pos != -1:
-        cut = r.text[r.text.find('Spätzle'):r.text.find('Spätzle')+50]
-        ingredients = cut.split('(')[1].split(')')[0].split(',')
+    soup = BeautifulSoup(r.text, 'html.parser')
+
+    today = soup.find('a', class_='heute')['rel'][0]
+    today_menu = soup.find('div', id=f'tab{today}')
+    meals = today_menu.find_all('div', class_='title')
+
+    spaetzle = None
+    for m in meals:
+        if "Spätzle" in m.text:
+            spaetzle = m
+            break
+
+    if spaetzle is not None:
+        ingredients = spaetzle.find('sup').text
         if '28' in ingredients:
             answer = "Spätzle with egg today"
             color = "green"
