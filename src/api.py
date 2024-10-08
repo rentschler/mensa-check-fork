@@ -5,11 +5,13 @@ from fastapi.templating import Jinja2Templates
 from cachetools import cached, TTLCache
 from bs4 import BeautifulSoup
 import requests
+import re
 
 
 cache = TTLCache(maxsize=1, ttl=3600)
 app = FastAPI()
 templates = Jinja2Templates(directory="template")
+regex = re.compile(r'Spätzle <sup>([^/]*)<\/sup>')
 
 @cached(cache)
 def checkMensa():
@@ -30,11 +32,12 @@ def checkMensa():
             break
 
     if spaetzle is not None:
-        ingredients = spaetzle.find('sup').text
+        ingredients = re.search(regex, str(spaetzle)).group(1)
         if '28' in ingredients:
             answer = "Spätzle with egg today"
             color = "green"
             emoji = "✅"
+    
         else:
             answer = "WARNING: Spätzle without egg today"
             color = "red"
