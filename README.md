@@ -10,8 +10,8 @@ Using the allergen information on the mensa website we can check if the spätzle
 This project serves a simple [website](spaetzle.traberph.de) that checks the spätzle for you.
 
 ## How to run
-Simply run it with docker-compose
+Simply run it with docker compose
 
 ```
-docker-compose up
+docker compose up
 ```
