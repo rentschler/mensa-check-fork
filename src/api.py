@@ -45,7 +45,7 @@ def checkMensa():
     else:
         answer = "No Spätzle today "
         color = "grey"
-        emoji = "🤷🏻‍♂️"
+        emoji = "🤷"
 
     return answer, color, emoji
 
