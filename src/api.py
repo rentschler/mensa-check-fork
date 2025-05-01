@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
+from fastapi.responses import FileResponse
 from fastapi.templating import Jinja2Templates
 from cachetools import cached, TTLCache
 from bs4 import BeautifulSoup
@@ -56,3 +57,10 @@ async def root(request: Request):
         request=request, name="main.html", context={"text": answer, "color": color , "emoji": emoji}
     )
 
+@app.get("/manifest.json")
+async def manifest(request: Request):
+    return FileResponse(path="assets/manifest.json")
+
+@app.get("/icons/512.png")
+async def icon(request: Request):
+    return FileResponse(path="assets/logo.png")
