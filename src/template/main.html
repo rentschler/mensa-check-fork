@@ -67,6 +67,24 @@
     </div>
     <div>{{emoji}}</div>
 
+    <h2 style="margin-top:40px;">Weekly Spätzle Overview</h2>
+    <div style="max-height: 300px; overflow-y: auto; margin: 0 auto;">
+        <table style="margin: 0 auto; border-collapse: collapse; font-size:2vh;">
+            <!-- <tr>
+                <th style="padding: 8px; position: sticky; top: 0; background-color: #fff;">Day</th>
+                <th style="padding: 8px; position: sticky; top: 0; background-color: #fff;">Status</th>
+                <th style="padding: 8px; position: sticky; top: 0; background-color: #fff;">Emoji</th>
+            </tr> -->
+            {% for day in week %}
+            <tr style="background-color: {{ day.color }}; color: #fff;">
+                <td style="padding: 8px;">{{ day.day }}</td>
+                <td style="padding: 8px;">{{ day.text }}</td>
+                <td style="padding: 8px; font-size: 2em;">{{ day.emoji }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
     <footer>
         <p>Powered by:
             <a href="https://kubernetes.io/de/"><span>k8s</span></a>
