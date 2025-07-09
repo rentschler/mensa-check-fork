@@ -12,7 +12,7 @@ import re
 cache = TTLCache(maxsize=1, ttl=3600)
 app = FastAPI()
 templates = Jinja2Templates(directory="template")
-regex = re.compile(r'Spätzle <sup>([^/]*)<\/sup>')
+regex = re.compile(r'spätzle <sup>([^/]*)</sup>', re.IGNORECASE)
 
 @cached(cache)
 def checkMensa():
@@ -28,7 +28,7 @@ def checkMensa():
 
     spaetzle = None
     for m in meals:
-        if "Spätzle" in m.text:
+        if "spätzle" in m.text.lower():
             spaetzle = m
             break
 
