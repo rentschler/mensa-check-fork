@@ -12,7 +12,7 @@ import re
 cache = TTLCache(maxsize=1, ttl=3600)
 app = FastAPI()
 templates = Jinja2Templates(directory="template")
-regex = re.compile(r'spätzle <sup>([^/]*)<\/sup>', re.IGNORECASE)
+regex = re.compile(r'spätzle <sup>([^/]*)</sup>', re.IGNORECASE)
 
 @cached(cache)
 def checkMensa():
