@@ -1,4 +1,4 @@
-name: Build and Push Docker Image
+name: Ruff - Code Quality Check 
 
 on:
   pull_request:
