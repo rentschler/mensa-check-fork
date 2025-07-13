@@ -7,7 +7,9 @@ from cachetools import cached, TTLCache
 from bs4 import BeautifulSoup
 import requests
 import re
+import logging
 
+logger = logging.getLogger("uvicorn.error")
 
 cache = TTLCache(maxsize=1, ttl=3600)
 app = FastAPI()
@@ -16,39 +18,45 @@ regex = re.compile(r'spätzle <sup>([^/]*)</sup>', re.IGNORECASE)
 
 @cached(cache)
 def checkMensa():
-    print("Checking Mensa")
+    logger.info("Checking Mensa")
     
-    url = 'https://seezeit.com/essen/speiseplaene/mensa-giessberg/'
-    r = requests.get(url)
-    soup = BeautifulSoup(r.text, 'html.parser')
+    try:
+        url = 'https://seezeit.com/essen/speiseplaene/mensa-giessberg/'
+        r = requests.get(url)
+        soup = BeautifulSoup(r.text, 'html.parser')
 
-    today = soup.find('a', class_='heute')['rel'][0]
-    today_menu = soup.find('div', id=f'tab{today}')
-    meals = today_menu.find_all('div', class_='title')
+        today = soup.find('a', class_='heute')['rel'][0]
+        today_menu = soup.find('div', id=f'tab{today}')
+        meals = today_menu.find_all('div', class_='title')
 
-    spaetzle = None
-    for m in meals:
-        if "spätzle" in m.text.lower():
-            spaetzle = m
-            break
+        spaetzle = None
+        for m in meals:
+            if "spätzle" in m.text.lower():
+                spaetzle = m
+                break
 
-    if spaetzle is not None:
-        ingredients = re.search(regex, str(spaetzle)).group(1)
-        if '28' in ingredients:
-            answer = "Spätzle with egg today"
-            color = "green"
-            emoji = "✅"
-    
+        if spaetzle is not None:
+            ingredients = re.search(regex, str(spaetzle)).group(1)
+            if '28' in ingredients:
+                answer = "Spätzle with egg today"
+                color = "green"
+                emoji = "✅"
+        
+            else:
+                answer = "WARNING: Spätzle without egg today"
+                color = "red"
+                emoji = "❌"
         else:
-            answer = "WARNING: Spätzle without egg today"
-            color = "red"
-            emoji = "❌"
-    else:
-        answer = "No Spätzle today "
+            answer = "No Spätzle today "
+            color = "grey"
+            emoji = "🤷"
+    except Exception as e:
+        answer = "No menu today"
         color = "grey"
-        emoji = "🤷"
-
-    return answer, color, emoji
+        emoji = "⛱️"
+    finally:
+        logger.info(f"Answer: {answer}, Color: {color}, Emoji: {emoji}")
+        return answer, color, emoji
 
 @app.get("/", response_class=HTMLResponse)
 async def root(request: Request):
